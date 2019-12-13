@@ -17,7 +17,7 @@ namespace Timer
 
 	struct Scoped final
 	{
-		explicit Scoped(const std::string& str) : label(std::move(str)), start(Clock::now()) { }
+		explicit Scoped(const char* str) : label(str), start(Clock::now()) { }
 		~Scoped() { getStorage().push_back({ label, (Clock::now() - start).count() }); }
 
 	public:
@@ -27,7 +27,7 @@ namespace Timer
 
 	struct Stopped final
 	{
-		explicit Stopped(const std::string& str) : label(std::move(str)), start(Clock::now()) { }
+		explicit Stopped(const char* str) : label(str), start(Clock::now()) { }
 		void stop() { getStorage().push_back({ label, (Clock::now() - start).count() }); };
 
 	public:

@@ -13,7 +13,12 @@
 
 #include "SparseSetBenchmark.hpp"
 #include "Timer.hpp"
+#include "Utility.hpp"
 
+void printStats()
+{
+
+}
 void createEntities(ECS::ECSManager& em, const size_t COUNT)
 {
 	for (size_t i = 0; i < COUNT; i++)
@@ -37,58 +42,82 @@ void createEntities(ECS::ECSManager& em, const size_t COUNT)
 void addAndMeasure(ECS::ECSManager& em)
 {
 	{
-		Timer::Scoped timer("Pos, !Acc");
+		Timer::Scoped timer("Pos, !Acc:");
+		int count = 0;
 		auto view = em.getView<Position>(TypeList<Acceleration>());
-		view.for_each_entity([](Position& pos)
+		view.for_each_entity([&count](Position& pos)
 		{
 			pos.x += 1;
 			pos.y += 3;
+			count++;
 		});
+
+		timer.label += std::to_string(count) + "\t";
 	}
 	{
-		Timer::Scoped timer("Pos      ");
+		Timer::Scoped timer("Pos      :");
+		int count = 0;
 		auto view = em.getView<Position>();
-		view.for_each_entity([](Position& pos)
+		view.for_each_entity([&count](Position& pos)
 		{
 			pos.x += 1;
 			pos.y += 43;
+			count++;
 		});
+
+		timer.label += std::to_string(count) + "\t";
 	}
 	{
-		Timer::Scoped timer("Pos,  Acc");
+		Timer::Scoped timer("Pos,  Acc:");
+		int count = 0;
 		auto view = em.getView<Position, Acceleration>();
-		view.for_each_entity([](Position& pos, Acceleration& acc)
+		view.for_each_entity([&count](Position& pos, Acceleration& acc)
 		{
 			pos.x += acc.x;
 			pos.y += acc.y;
+			count++;
 		});
+
+		timer.label += std::to_string(count) + "\t";
 	}
 	{
-		Timer::Scoped timer("Acc,  Pos");
+		Timer::Scoped timer("Acc,  Pos:");
+		int count = 0;
 		auto view = em.getView<Acceleration, Position>();
-		view.for_each_entity([](Acceleration& acc, Position& pos)
+		view.for_each_entity([&count](Acceleration& acc, Position& pos)
 		{
 			pos.x += acc.x;
 			pos.y += acc.y;
+			count++;
 		});
+
+		timer.label += std::to_string(count) + "\t";
 	}
 	{
-		Timer::Scoped timer("      Acc");
+		Timer::Scoped timer("      Acc:");
+		int count = 0;
 		auto view = em.getView<Acceleration>();
-		view.for_each_entity([](Acceleration& acc)
+		view.for_each_entity([&count](Acceleration& acc)
 		{
 			acc.x += 1;
 			acc.y += 3;
+			count++;
 		});
+
+		timer.label += std::to_string(count) + "\t";
 	}
 	{
-		Timer::Scoped timer("Acc, !Pos");
+		Timer::Scoped timer("Acc, !Pos:");
+		int count = 0;
 		auto view = em.getView<Acceleration>(TypeList<Position>());
-		view.for_each_entity([](Acceleration& acc)
+		view.for_each_entity([&count](Acceleration& acc)
 		{
 			acc.x += 1;
 			acc.y += 3;
+			count++;
 		});
+
+		timer.label += std::to_string(count) + "\t\t";
 	}
 }
 void test4()
@@ -124,18 +153,20 @@ int main()
 
 	ECS::ECSManager em;
 	{
-		Timer::Scoped timer("Creation ");
-		createEntities(em, 10000000);
+		Timer::Scoped timer("Creation :");
+		createEntities(em, 1'000'000);
+		timer.label += "\t\t";
 	}
 	{
-		Timer::Scoped timer("Measuring");
+		Timer::Scoped timer("Measuring:");
 		addAndMeasure(em);
+		timer.label += "\t\t";
 	}
 
 	auto& storage = Timer::getStorage();
 	for (auto&[first, second] : storage)
 	{
-		std::cout << first << ": " << second << " ns\n";
+		std::cout << first << " " << second << "  \tns = " << second / 1e6 << " ms \n";
 	}
 
 	std::cin.get();
