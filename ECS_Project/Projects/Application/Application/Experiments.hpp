@@ -20,7 +20,7 @@ static constexpr auto DISJUNCT_H = std::disjunction<std::integral_constant<int, 
 #pragma region Components
 struct BaseComp
 {
-	typedef int id_type;
+	using id_type = int;
 };
 struct Pos : public BaseComp
 {

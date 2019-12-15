@@ -13,7 +13,7 @@ namespace ECS
 	template<typename CompType, typename ReturnType>
 	using enable_if_component = typename std::enable_if_t<is_component<CompType>::value, ReturnType>;
 
-	typedef size_t BitMask;
+	using BitMask = size_t;
 
 	class ECSManager final
 	{
@@ -43,6 +43,9 @@ namespace ECS
 
 		template<typename CompType>
 		void detachComponent(const Entity& entity);
+
+		template<typename CompType>
+		[[nodiscard]] size_t sizeOfPool() const;
 #pragma endregion
 
 	private:
@@ -151,6 +154,12 @@ namespace ECS
 		ComponentPool<CompType>* pool = getPool<CompType>();
 		pool->components.remove(entity.ID);
 		removeFromBitMask<CompType>(entity);
+	}
+
+	template<typename CompType>
+	inline size_t ECSManager::sizeOfPool() const
+	{
+		return getPool<CompType>()->components.size();
 	}
 
 #pragma endregion

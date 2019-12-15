@@ -10,9 +10,32 @@
 
 namespace ECS
 {
-#ifndef NEW_POOL
-	typedef int ComponentID;
-	typedef int EntityID;
+#ifdef NEW_POOL
+	class BaseComponentPool
+	{
+	public:
+		BaseComponentPool(const BaseComponentPool& other) = delete;
+		virtual ~BaseComponentPool() = default;
+		BaseComponentPool& operator=(const BaseComponentPool& other) = delete;
+	protected:
+		BaseComponentPool() = default;
+	};
+
+	template<typename T>
+	class ComponentPool final : public BaseComponentPool
+	{
+	public:
+		ComponentPool() = default;
+		ComponentPool(const ComponentPool& other) = delete;
+		~ComponentPool() = default;
+		ComponentPool& operator=(const ComponentPool& other) = delete;
+
+	public:
+		SparseSet<T> components;
+	};
+#else
+	using ComponentID = int;
+	using EntityID = int;
 
 	class BaseComponentPool
 	{
@@ -104,29 +127,6 @@ namespace ECS
 		}
 	};
 
-#else
-	class BaseComponentPool
-	{
-	public:
-		BaseComponentPool(const BaseComponentPool& other) = delete;
-		virtual ~BaseComponentPool() = default;
-		BaseComponentPool& operator=(const BaseComponentPool& other) = delete;
-	protected:
-		BaseComponentPool() = default;
-	};
-
-	template<typename T>
-	class ComponentPool final : public BaseComponentPool
-	{
-	public:
-		ComponentPool() = default;
-		ComponentPool(const ComponentPool& other) = delete;
-		~ComponentPool() = default;
-		ComponentPool& operator=(const ComponentPool& other) = delete;
-		
-	public:
-		SparseSet<T> components;
-	};
 
 #endif
 }

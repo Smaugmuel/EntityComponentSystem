@@ -6,7 +6,7 @@
 
 namespace ECS
 {
-	typedef int EntityID;
+	using EntityID = int;
 
 	template<typename... T>
 	class ComponentView;

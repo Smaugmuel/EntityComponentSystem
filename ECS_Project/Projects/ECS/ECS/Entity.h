@@ -4,7 +4,7 @@ namespace ECS
 {
 	class ECSManager;
 
-	typedef int EntityID;
+	using EntityID = int;
 
 	struct Entity final
 	{
