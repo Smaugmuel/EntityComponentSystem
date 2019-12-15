@@ -152,7 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\Main.cpp" />
+    <ClCompile Include="Src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ECS\ECS.vcxproj">
