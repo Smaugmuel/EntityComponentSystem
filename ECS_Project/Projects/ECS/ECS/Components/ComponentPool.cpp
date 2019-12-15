@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "pch_ECS.hpp"
 #include "ComponentPool.hpp"
 
 namespace ECS

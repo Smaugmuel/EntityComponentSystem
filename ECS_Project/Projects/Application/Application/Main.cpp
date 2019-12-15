@@ -1,4 +1,3 @@
-#include "ECS/Components/Component.hpp"
 #include "ECS/ECSManager.hpp"
 
 struct Position : public ECS::Component<Position>
