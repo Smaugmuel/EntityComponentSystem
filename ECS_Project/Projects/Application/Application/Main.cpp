@@ -29,8 +29,8 @@ int main()
 	);
 
 
-	auto pid = Position::ID;
-	auto mid = Movement::ID;
+	auto pid = Position::typeID();
+	auto mid = Movement::typeID();
 
 	return 0;
 }

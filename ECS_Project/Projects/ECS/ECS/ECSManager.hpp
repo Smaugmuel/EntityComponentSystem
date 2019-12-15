@@ -160,7 +160,7 @@ namespace ECS
 	inline constexpr ComponentTypeID ECSManager::getID() const noexcept
 	{
 		static_assert(is_component<CompType>::value);
-		return CompType::ID;
+		return CompType::typeID();
 	}
 
 	template<typename CompType>

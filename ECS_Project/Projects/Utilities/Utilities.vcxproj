@@ -159,6 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Utility\Events\Event.hpp" />
+    <ClInclude Include="Utility\Events\EventManager.hpp" />
+    <ClInclude Include="Utility\Events\EventReceiver.hpp" />
     <ClInclude Include="Utility\HelperTemplates.hpp" />
     <ClInclude Include="Utility\pch_Utilities.hpp" />
     <ClInclude Include="Utility\SparseSet.hpp" />

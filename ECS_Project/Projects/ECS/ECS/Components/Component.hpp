@@ -5,25 +5,28 @@ namespace ECS
 	using ComponentTypeID = unsigned int;
 
 	/*
-		Do not inherit directly from this class
+	
+		NOTE:
+
+		Component type IDs will assign automatically when calling type() for the first time.
+		If a certain type never calls type(), the assign will never happen.
+		This means that nrOfComponentTypes() will return the number of types actually in use,
+		not the number of declared types.
+
+	*/
+
+
+	/*
+		Do not inherit directly from BaseComponent
 		See Component below
 	*/
 	struct BaseComponent
 	{
 		virtual ~BaseComponent() = default;
 
-		/*
-			Do not call this directly
-		*/
-		static const ComponentTypeID createID()
-		{
-			return s_component_ID_counter++;
-		}
-
-		/*
-			Do not call this directly
-		*/
-		static const ComponentTypeID nrOfComponentTypes()
+		// Returns the number of component types in use
+		// (MIGHT CHANGE SOON)
+		static ComponentTypeID nrOfComponentTypes()
 		{
 			return s_component_ID_counter;
 		}
@@ -36,26 +39,26 @@ namespace ECS
 		BaseComponent() : m_valid(true) {}
 		bool m_valid;
 
-	private:
+		// Do not modify this manually
 		inline static ComponentTypeID s_component_ID_counter = 0;
 	};
 
 	/*
-		Components must inherit from this class, i.e. like
-		class MovementComponent : public Component<MovementComponent>
+		Components must inherit from this struct, i.e. like
+		struct Movement : public Component<Movement>
 	*/
 	template<typename T>
 	struct Component : public BaseComponent
 	{
 		virtual ~Component() = default;
-		static const ComponentTypeID ID;
+
+		// Returns this type's identifier ID
+		static ComponentTypeID typeID()
+		{
+			static ComponentTypeID ID = s_component_ID_counter++;
+			return ID;
+		}
 	protected:
 		Component() = default;
 	};
-
-	/*
-		Assigns dynamically during compilation
-	*/
-	template<typename T>
-	const ComponentTypeID Component<T>::ID = BaseComponent::createID();
 }
