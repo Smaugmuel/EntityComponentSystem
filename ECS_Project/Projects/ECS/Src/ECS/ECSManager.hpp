@@ -175,7 +175,7 @@ namespace ECS
 	inline void ECSManager::createPool()
 	{
 		static_assert(is_component<CompType>::value);
-		const ComponentTypeID compTypeID = getID<CompType>();
+		const size_t compTypeID = static_cast<const size_t>(getID<CompType>());
 		if (compTypeID >= m_componentPools.size())
 		{
 			m_componentPools.resize(compTypeID + 1, nullptr);
