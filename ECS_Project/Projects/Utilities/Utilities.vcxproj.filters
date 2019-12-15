@@ -15,27 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Utility\Utility.hpp">
+    <ClInclude Include="Utility\HelperTemplates.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Utility\HelperTemplates.hpp">
+    <ClInclude Include="Utility\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Utility\SparseSet.hpp">
+    <ClInclude Include="Utility\SparseSet.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Utility\Timer.hpp">
+    <ClInclude Include="Utility\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Utility\pch.h">
+    <ClInclude Include="Utility\Utility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Utility\Utility.cpp">
+    <ClCompile Include="Utility\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utility\pch.cpp">
+    <ClCompile Include="Utility\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
