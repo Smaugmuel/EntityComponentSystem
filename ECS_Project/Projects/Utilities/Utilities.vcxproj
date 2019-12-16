@@ -159,24 +159,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Utility\Benchmarks\SparseSetBenchmarks.hpp" />
-    <ClInclude Include="Utility\Events\Event.hpp" />
-    <ClInclude Include="Utility\Events\EventManager.hpp" />
-    <ClInclude Include="Utility\Events\EventReceiver.hpp" />
-    <ClInclude Include="Utility\HelperTemplates.hpp" />
-    <ClInclude Include="Utility\pch_Utilities.hpp" />
-    <ClInclude Include="Utility\SparseSet.hpp" />
-    <ClInclude Include="Utility\Timer.hpp" />
-    <ClInclude Include="Utility\Utility.hpp" />
+    <ClInclude Include="Utilities\Benchmarks\SparseSetBenchmarks.hpp" />
+    <ClInclude Include="Utilities\Events\Event.hpp" />
+    <ClInclude Include="Utilities\Events\EventManager.hpp" />
+    <ClInclude Include="Utilities\Events\EventReceiver.hpp" />
+    <ClInclude Include="Utilities\HelperTemplates.hpp" />
+    <ClInclude Include="Utilities\pch_Utilities.hpp" />
+    <ClInclude Include="Utilities\SparseSet.hpp" />
+    <ClInclude Include="Utilities\Timer.hpp" />
+    <ClInclude Include="Utilities\Utility.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Utility\pch_Utilities.cpp">
+    <ClCompile Include="Utilities\pch_Utilities.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Utility\Utility.cpp" />
+    <ClCompile Include="Utilities\Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
 #pragma once
-#include "Utility/SparseSet.hpp"
+#include "Utilities/SparseSet.hpp"
 
 namespace ECS
 {

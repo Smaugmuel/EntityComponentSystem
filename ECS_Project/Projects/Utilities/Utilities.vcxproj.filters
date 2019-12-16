@@ -15,39 +15,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Utility\HelperTemplates.hpp">
+    <ClInclude Include="Utilities\Benchmarks\SparseSetBenchmarks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\SparseSet.hpp">
+    <ClInclude Include="Utilities\Events\Event.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Timer.hpp">
+    <ClInclude Include="Utilities\Events\EventManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Utility.hpp">
+    <ClInclude Include="Utilities\Events\EventReceiver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\pch_Utilities.hpp">
+    <ClInclude Include="Utilities\HelperTemplates.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Events\Event.hpp">
+    <ClInclude Include="Utilities\pch_Utilities.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Events\EventManager.hpp">
+    <ClInclude Include="Utilities\SparseSet.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Events\EventReceiver.hpp">
+    <ClInclude Include="Utilities\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Benchmarks\SparseSetBenchmarks.hpp">
+    <ClInclude Include="Utilities\Utility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Utility\Utility.cpp">
+    <ClCompile Include="Utilities\pch_Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\pch_Utilities.cpp">
+    <ClCompile Include="Utilities\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 #include "ComponentPool.hpp"
-#include "Utility/HelperTemplates.hpp"
+#include "Utilities/HelperTemplates.hpp"
 
 #define SINGLE_COMPONENT_OPTIMIZATION
 

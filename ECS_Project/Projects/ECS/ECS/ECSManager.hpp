@@ -3,7 +3,7 @@
 #include "Components/Component.hpp"
 #include "Components/ComponentPool.hpp"
 #include "Components/ComponentView.hpp"
-#include "Utility/HelperTemplates.hpp"
+#include "Utilities/HelperTemplates.hpp"
 
 namespace ECS
 {
