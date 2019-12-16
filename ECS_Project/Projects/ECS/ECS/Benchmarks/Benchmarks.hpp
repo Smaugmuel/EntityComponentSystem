@@ -173,3 +173,4 @@ private:
 	Results m_results;
 	std::string m_resultString;
 };
+

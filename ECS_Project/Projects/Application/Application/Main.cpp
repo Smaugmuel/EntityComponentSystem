@@ -20,11 +20,12 @@ int main()
 	em.attachComponent<Movement>(entity, 78.0f, 132.0f);
 
 	auto view = em.getView<Position, Movement>();
+
 	view.for_each_entity(
 		[](Position& pos, Movement& mov)
 		{
 			pos.x += mov.x;
-			pos.y += mov.y; 
+			pos.y += mov.y;
 		}
 	);
 

@@ -124,13 +124,11 @@ namespace ECS
 
 		ComponentPool<CompType>* pool = getPool<CompType>();
 
-		if (hasComponent<CompType>(entity.ID))
+		if (!hasComponent<CompType>(entity.ID))
 		{
-			return pool->components.get(entity.ID);
+			pool->components.add(entity.ID, args...);
+			addToBitMask<CompType>(entity);
 		}
-
-		pool->components.add(entity.ID, args...);
-		addToBitMask<CompType>(entity);
 
 		return pool->components.get(entity.ID);
 	}
@@ -139,18 +137,13 @@ namespace ECS
 	inline void ECSManager::detachComponent(const Entity & entity)
 	{
 		static_assert(is_component<CompType>::value);
-		if (!isValid(entity.ID))
+		
+		bool canBeDetached = isValid(entity.ID) && hasPool<CompType>() && hasComponent<CompType>(entity);
+		if (!canBeDetached)
 		{
 			return;
 		}
-		if (!hasPool<CompType>())
-		{
-			return;
-		}
-		if (!hasComponent<CompType>(entity))
-		{
-			return;
-		}
+
 		ComponentPool<CompType>* pool = getPool<CompType>();
 		pool->components.remove(entity.ID);
 		removeFromBitMask<CompType>(entity);

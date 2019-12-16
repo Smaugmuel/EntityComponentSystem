@@ -109,7 +109,7 @@ namespace ECS
 		{
 			return *std::get<ComponentPool<CompType>*>(m_includedPools);
 		}
-		else  // This else must NOT be removed
+		else  // This else MUST remain, due to compile-time checks
 		{
 			return *std::get<ComponentPool<CompType>*>(m_excludedPools);
 		}
@@ -125,10 +125,13 @@ namespace ECS
 		const auto& elemToIdx = sparseSet.getElemToIdx();
 		const size_t size = sparseSet.size();
 
-		// Check for components on each entity that has at least a component of the first included type
+		// Check for components on each entity that has the first included type
 		for (size_t i = 0; i < size; i++)
 		{
 			const auto idx = elemToIdx[i];
+
+			// TODO: Test performance of this versus using ECSManager::hasComponent()
+			// TODO: Then test when calculating the total mask and comparing it at once with a new function
 
 			const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(idx) && ...);
 			const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(idx) || ...);
