@@ -36,12 +36,12 @@
     <ClInclude Include="ECS\pch_ECS.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\Benchmarks\ECSManagerBenchmarks.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\ECSManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\Components\ComponentPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ECS\pch_ECS.cpp">

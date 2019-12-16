@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Utility\Benchmarks\SparseSetBenchmarks.hpp" />
     <ClInclude Include="Utility\Events\Event.hpp" />
     <ClInclude Include="Utility\Events\EventManager.hpp" />
     <ClInclude Include="Utility\Events\EventReceiver.hpp" />

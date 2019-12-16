@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ECS\Benchmarks\Benchmarks.hpp" />
+    <ClInclude Include="ECS\Benchmarks\ECSManagerBenchmarks.hpp" />
     <ClInclude Include="ECS\Components\Component.hpp" />
     <ClInclude Include="ECS\Components\ComponentPool.hpp" />
     <ClInclude Include="ECS\Components\ComponentView.hpp" />
@@ -172,7 +173,6 @@
     <ClInclude Include="ECS\pch_ECS.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ECS\Components\ComponentPool.cpp" />
     <ClCompile Include="ECS\ECSManager.cpp" />
     <ClCompile Include="ECS\pch_ECS.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
