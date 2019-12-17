@@ -1,37 +1,84 @@
 #include "ECS/ECSManager.hpp"
+#include "Components/Components.hpp"
+#include "Utilities/Timer.hpp"
+#include <iostream>
 
-struct Position : public ECS::Component<Position>
+void createCharacter(ECS::ECSManager& em)
 {
-	Position(float _x, float _y) : x(_x), y(_y) {}
-	float x, y;
-};
-struct Movement : public ECS::Component<Movement>
+	auto entity = em.createEntity();
+	em.attachComponent<Position>(entity);
+	em.attachComponent<Movement>(entity);
+	em.attachComponent<Acceleration>(entity);
+	em.attachComponent<Gravity>(entity);
+}
+
+void movementSystem(ECS::ECSManager& em, float dt)
 {
-	Movement(float _x, float _y) : x(_x), y(_y) {}
-	float x, y;
-};
+	auto view = em.getView<Movement, Position>();
+	view.for_each_entity([dt](Movement& mov, Position& pos)
+		{
+			pos.x += mov.x * dt;
+			pos.y += mov.y * dt;
+		}
+	);
+}
+void accelerationSystem(ECS::ECSManager& em, float dt)
+{
+	auto view = em.getView<Acceleration, Movement>();
+	view.for_each_entity([dt](Acceleration& acc, Movement& mov)
+		{
+			mov.x += acc.x * dt;
+			mov.y += acc.y * dt;
+		}
+	);
+}
+void gravitySystem(ECS::ECSManager& em, float dt)
+{
+	auto view = em.getView<Gravity, Movement>();
+	view.for_each_entity([dt](Gravity& grav, Movement& mov)
+		{
+			mov.x += grav.x * dt;
+			mov.y += grav.y * dt;
+		}
+	);
+}
 
 int main()
 {
 	ECS::ECSManager em;
-	auto entity = em.createEntity();
+	Timer::TimePoint tp1, tp2;
 
-	em.attachComponent<Position>(entity, 43.0f, 12.0f);
-	em.attachComponent<Movement>(entity, 78.0f, 132.0f);
+	for (size_t i = 0; i < 10'000; i++)
+	{
+		createCharacter(em);
+	}
 
-	auto view = em.getView<Position, Movement>();
-
-	view.for_each_entity(
-		[](Position& pos, Movement& mov)
-		{
-			pos.x += mov.x;
-			pos.y += mov.y;
-		}
-	);
+	constexpr float nsToS = 1.0f / static_cast<float>(1e9);
 
 
-	auto pid = Position::typeID();
-	auto mid = Movement::typeID();
+	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<>>::INCLUDED_MASK;
+	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<Gravity, Position>>::INCLUDED_MASK;
+	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<Gravity, Position>>::EXCLUDED_MASK;
+	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<>>::EXCLUDED_MASK;
+
+
+	Timer::Stopped timer("10'000 iterations");
+	for (size_t i = 0; i < 10'000; i++)
+	{
+		tp1 = tp2;
+		tp2 = Timer::Clock::now();
+		const float dt = (tp2 - tp1).count() * nsToS;
+
+		accelerationSystem(em, dt);
+		gravitySystem(em, dt);
+		movementSystem(em, dt);
+	}
+	timer.stop();
+
+	for (auto& [label, time] : Timer::getStorage())
+	{
+		std::cout << label << ": " << static_cast<double>(time) / 1e6 << "ms\n";
+	}
 
 	return 0;
 }

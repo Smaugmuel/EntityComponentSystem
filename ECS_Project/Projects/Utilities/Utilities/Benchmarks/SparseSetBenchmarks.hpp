@@ -2,7 +2,7 @@
 #include <string>
 #include <chrono>
 #include <Psapi.h>
-#include "Utilities/SparseSet.hpp"
+#include "SparseSet.hpp"
 
 template<typename T>
 class SparseSetBenchmark final

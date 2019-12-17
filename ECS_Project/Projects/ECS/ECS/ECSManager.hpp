@@ -13,7 +13,7 @@ namespace ECS
 	template<typename CompType, typename ReturnType>
 	using enable_if_component = typename std::enable_if_t<is_component<CompType>::value, ReturnType>;
 
-	using BitMask = size_t;
+	using Bitmask = size_t;
 
 	class ECSManager final
 	{
@@ -23,7 +23,7 @@ namespace ECS
 		~ECSManager();
 
 		[[nodiscard]] Entity createEntity();
-		[[nodiscard]] BitMask getComponentMask(const EntityID id) const;
+		[[nodiscard]] Bitmask getComponentMask(const EntityID id) const;
 		[[nodiscard]] bool isValid(const EntityID ID) const;
 
 		void reserveEntities(const size_t COUNT);
@@ -37,9 +37,13 @@ namespace ECS
 
 		template<typename CompType>
 		[[nodiscard]] bool hasComponent(const Entity& entity) const;
+		template<typename CompType>
+		[[nodiscard]] bool hasComponent(EntityID entityID) const;
 
 		template<typename CompType, typename... TArgs>
 		[[maybe_unused]] CompType* attachComponent(const Entity& entity, const TArgs&... args);
+		template<typename CompType, typename... TArgs>
+		[[maybe_unused]] CompType* attachComponent(EntityID entityID, const TArgs&... args);
 
 		template<typename CompType>
 		void detachComponent(const Entity& entity);
@@ -72,15 +76,15 @@ namespace ECS
 		ComponentPool<CompType>* getPool();
 
 		template<typename CompType>
-		void addToBitMask(const Entity& entity);
+		void addToBitMask(EntityID entityID);
 
 		template<typename CompType>
-		void removeFromBitMask(const Entity& entity);
+		void removeFromBitMask(EntityID entityID);
 #pragma endregion
 
 	private:
 		// Bitwise representation of which components each entity has
-		std::vector<BitMask> m_componentMasks;
+		std::vector<Bitmask> m_componentMasks;
 
 		// Validity of each entity
 		std::vector<bool> m_isValidEntity;
@@ -97,7 +101,7 @@ namespace ECS
 	[[nodiscard]] inline ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>> ECSManager::getView(TypeList<ExcludedTypes...>)
 	{
 		static_assert(sizeof...(IncludedTypes) > 0, "ECS::ECSManager::getComponents() : No included types");
-		//static_assert(std::disjunction<is_any_of<IncludedTypes, ExcludedTypes...>::value...>::value);		// Make this work somehow
+		//static_assert(std::disjunction<is_any_of<IncludedTypes, ExcludedTypes...>::value...>::value);		// Make this work somehow	
 		return { getPool<IncludedTypes>()..., getPool<ExcludedTypes>()... };
 	}
 
@@ -105,15 +109,29 @@ namespace ECS
 	[[nodiscard]] inline bool ECSManager::hasComponent(const Entity& entity) const
 	{
 		static_assert(is_component<CompType>::value);
+		return hasComponent<CompType>(entity.ID);
+	}
+
+	template<typename CompType>
+	inline bool ECSManager::hasComponent(EntityID entityID) const
+	{
+		static_assert(is_component<CompType>::value);
 		// 1 means maximum 32 bit shift. 1ULL means maximum 64 bit shift
-		return (m_componentMasks[entity.ID] & (1ULL << getID<CompType>()));
+		return (m_componentMasks[entityID] & (1ULL << getID<CompType>()));
 	}
 
 	template<typename CompType, typename ...TArgs>
-	[[maybe_unused]] inline CompType* ECSManager::attachComponent(const Entity & entity, const TArgs & ...args)
+	[[maybe_unused]] inline CompType* ECSManager::attachComponent(const Entity& entity, const TArgs& ...args)
 	{
 		static_assert(is_component<CompType>::value);
-		if (!isValid(entity.ID))
+		return attachComponent<CompType, TArgs...>(entity.ID, args...);
+	}
+	
+	template<typename CompType, typename ...TArgs>
+	[[maybe_unused]] inline CompType* ECSManager::attachComponent(EntityID entityID, const TArgs & ...args)
+	{
+		static_assert(is_component<CompType>::value);
+		if (!isValid(entityID))
 		{
 			return nullptr;
 		}
@@ -124,13 +142,13 @@ namespace ECS
 
 		ComponentPool<CompType>* pool = getPool<CompType>();
 
-		if (!hasComponent<CompType>(entity.ID))
+		if (!hasComponent<CompType>(entityID))
 		{
-			pool->components.add(entity.ID, args...);
-			addToBitMask<CompType>(entity);
+			pool->components.add(entityID, args...);
+			addToBitMask<CompType>(entityID);
 		}
 
-		return pool->components.get(entity.ID);
+		return pool->components.get(entityID);
 	}
 
 	template<typename CompType>
@@ -198,17 +216,17 @@ namespace ECS
 	}
 
 	template<typename CompType>
-	inline void ECSManager::addToBitMask(const Entity& entity)
+	inline void ECSManager::addToBitMask(EntityID entityID)
 	{
 		static_assert(is_component<CompType>::value);
-		m_componentMasks[entity.ID] |= (1ULL << getID<CompType>());
+		m_componentMasks[entityID] |= (1ULL << getID<CompType>());
 	}
 
 	template<typename CompType>
-	inline void ECSManager::removeFromBitMask(const Entity& entity)
+	inline void ECSManager::removeFromBitMask(EntityID entityID)
 	{
 		static_assert(is_component<CompType>::value);
-		m_componentMasks[entity.ID] &= ~(1ULL << getID<CompType>());
+		m_componentMasks[entityID] &= ~(1ULL << getID<CompType>());
 	}
 #pragma endregion
 }

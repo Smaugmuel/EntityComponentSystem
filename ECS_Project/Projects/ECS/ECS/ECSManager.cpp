@@ -27,7 +27,7 @@ namespace ECS
 
 		return Entity(entityID);
 	}
-	[[nodiscard]] BitMask ECSManager::getComponentMask(const EntityID id) const
+	[[nodiscard]] Bitmask ECSManager::getComponentMask(const EntityID id) const
 	{
 		return m_componentMasks[id];
 	}

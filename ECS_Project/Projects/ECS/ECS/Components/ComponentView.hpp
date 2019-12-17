@@ -2,11 +2,23 @@
 #include "ComponentPool.hpp"
 #include "Utilities/HelperTemplates.hpp"
 
-#define SINGLE_COMPONENT_OPTIMIZATION
-
 namespace ECS
 {
 	using EntityID = int;
+	using Bitmask = size_t;
+
+	template<typename... T>
+	static constexpr Bitmask calculateMask()
+	{
+		if constexpr (sizeof...(T) == 0)
+		{
+			return 0;
+		}
+		else
+		{
+			return ((1 << T::ID) | ...);
+		}
+	}
 
 	template<typename... T>
 	class ComponentView;
@@ -17,19 +29,25 @@ namespace ECS
 		static_assert(sizeof...(IncludedTypes) > 0, "No included types found");
 
 	public:
-		ComponentView(ComponentPool<IncludedTypes>*... includedPools, ComponentPool<ExcludedTypes>*... excludedPools);
+		ComponentView(ComponentPool<IncludedTypes>*... includedPools, ComponentPool<ExcludedTypes>*... excludedPools) : 
+			m_includedPools{ includedPools }, m_excludedPools{ excludedPools } {}
 		ComponentView(const ComponentView& other) = default;
 		~ComponentView() = default;
 		ComponentView& operator=(const ComponentView& other) = default;
 
-		// Retrieves a pointer to a component of type T which is attached to an entity with the specified ID
-		// Needs more work
-		template<typename CompType>
-		CompType* get(const EntityID entityID);
-
+		// Performs the passed function on each entity with all of the included components and none of the exlcuded ones
+		// The included components are sent as reference arguments to the function
 		template<typename Function>
 		void for_each_entity(Function f);
-		
+
+		// Retrieves a pointer to a component of type T which is attached to an entity with the specified ID
+		// TODO: More work
+		template<typename CompType>
+		CompType* get(const EntityID entityID);		
+
+	public:
+		static constexpr Bitmask INCLUDED_MASK = calculateMask<IncludedTypes...>();
+		static constexpr Bitmask EXCLUDED_MASK = calculateMask<ExcludedTypes...>();
 
 	private:
 		// Retrieves a pointer to a component pool of type T
@@ -37,38 +55,20 @@ namespace ECS
 		ComponentPool<CompType>& getPool();
 
 		template<typename Func>
-		void iterate(Func f);
-
-		/*auto* getSmallestPool()
-		{
-			const int size[] = { getPool<IncludedTypes>().components.size()... };
-			constexpr size_t nTypes = sizeof...(IncludedTypes);
-
-			int smallestSizeIdx = 0;
-
-			for (size_t i = 1; i < nTypes; i++)
-			{
-				if (size[i] < size[smallestSizeIdx])
-				{
-					smallestSizeIdx = i;
-				}
-			}
-
-			return what;
-		}*/
+		void iterateSingleWithoutExcludes(Func f);
+		template<typename Func>
+		void iterateSingleWithExcludes(Func f);
+		template<typename Func>
+		void iterateMultiWithoutExcludes(Func f);
+		template<typename Func>
+		void iterateMultiWithExcludes(Func f);
 
 	private:
 		// Pointers to any number of component pools of different types
 		const std::tuple<ComponentPool<IncludedTypes>*...> m_includedPools;
 		const std::tuple<ComponentPool<ExcludedTypes>*...> m_excludedPools;
 	};
-
-	template<typename ...IncludedTypes, typename ...ExcludedTypes>
-	inline ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::ComponentView(ComponentPool<IncludedTypes>* ...includedPools, ComponentPool<ExcludedTypes>* ...excludedPools) :
-		m_includedPools{ includedPools... }, m_excludedPools{ excludedPools... }
-	{
-	}
-
+	
 	template<typename ...IncludedTypes, typename ...ExcludedTypes>
 	template<typename CompType>
 	inline CompType * ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::get(const EntityID entityID)
@@ -76,27 +76,7 @@ namespace ECS
 		static_assert(static_cast<bool>(is_any_of<CompType, IncludedTypes...>::value), "CompType is not an included type");
 		return getPool<CompType>().components.get(entityID);
 	}
-	template<typename ...IncludedTypes, typename ...ExcludedTypes>
-	template<typename Function>
-	inline void ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::for_each_entity(Function f)
-	{
-#ifdef SINGLE_COMPONENT_OPTIMIZATION
-		if constexpr (sizeof...(IncludedTypes) == 1 && sizeof...(ExcludedTypes) == 0)
-		{
-			// Iterate components directly without retrieving entity index first
-			auto& iteratedPool = *std::get<0>(m_includedPools);
-			auto& components = iteratedPool.components.getElements();
-			const size_t size = iteratedPool.components.size();
-
-			for (size_t i = 0; i < size; i++)
-			{
-				f(components[i]);
-			}
-			return;
-		}
-#endif
-		iterate(f);
-	}
+	
 	template<typename ...IncludedTypes, typename ...ExcludedTypes>
 	template<typename CompType>
 	inline ComponentPool<CompType>& ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::getPool()
@@ -114,31 +94,110 @@ namespace ECS
 			return *std::get<ComponentPool<CompType>*>(m_excludedPools);
 		}
 	}
+
+
+	template<typename ...IncludedTypes, typename ...ExcludedTypes>
+	template<typename Function>
+	inline void ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::for_each_entity(Function f)
+	{
+		if constexpr (sizeof...(IncludedTypes) == 1)
+		{
+			if constexpr (sizeof...(ExcludedTypes) == 0)
+			{
+				iterateSingleWithoutExcludes(f);
+			}
+			else
+			{
+				iterateSingleWithExcludes(f);
+			}
+		}
+		else
+		{
+			if constexpr (sizeof...(ExcludedTypes) == 0)
+			{
+				iterateMultiWithoutExcludes(f);
+			}
+			else
+			{
+				iterateMultiWithExcludes(f);
+			}
+		}
+	}
+
 	template<typename ...IncludedTypes, typename ...ExcludedTypes>
 	template<typename Func>
-	inline void ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::iterate(Func f)
+	inline void ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::iterateSingleWithoutExcludes(Func f)
 	{
-		// TODO: Iterate over the pool with the fewest components
+		// Iterate components from the first included pool directly
+		auto& components = std::get<0>(m_includedPools)->components.getElements();
 
-		// Iterate over the first pool to retrieve entity indices
-		const auto& sparseSet = std::get<0>(m_includedPools)->components;
+		for (auto& comp : components)
+		{
+			f(comp);
+		}
+	}
+
+	template<typename ...IncludedTypes, typename ...ExcludedTypes>
+	template<typename Func>
+	inline void ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::iterateSingleWithExcludes(Func f)
+	{
+		// Iterate components from the first included pool directly and retrieve entity indices to check excluded components
+		auto& sparseSet = std::get<0>(m_includedPools)->components;
+		auto& components = sparseSet.getElements();
 		const auto& elemToIdx = sparseSet.getElemToIdx();
 		const size_t size = sparseSet.size();
 
-		// Check for components on each entity that has the first included type
 		for (size_t i = 0; i < size; i++)
 		{
-			const auto idx = elemToIdx[i];
-
-			// TODO: Test performance of this versus using ECSManager::hasComponent()
-			// TODO: Then test when calculating the total mask and comparing it at once with a new function
-
-			const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(idx) && ...);
-			const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(idx) || ...);
-
-			if (hasAllIncluded && !hasAnyExcluded)
+			const auto entityIdx = elemToIdx[i];
+			const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(entityIdx) || ...);
+			if (!hasAnyExcluded)
 			{
-				f(*getPool<IncludedTypes>().components.get(idx)...);
+				f(components[i]);
+			}
+		}
+	}
+
+	template<typename ...IncludedTypes, typename ...ExcludedTypes>
+	template<typename Func>
+	inline void ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::iterateMultiWithoutExcludes(Func f)
+	{
+		// Iterate entity indices from the first included pool and check all included components
+		auto& sparseSet = std::get<0>(m_includedPools)->components;
+		const auto& elemToIdx = sparseSet.getElemToIdx();
+		const size_t size = sparseSet.size();
+
+		for (size_t i = 0; i < size; i++)
+		{
+			const auto entityIdx = elemToIdx[i];
+			const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(entityIdx) || ...);
+			if (hasAllIncluded)
+			{
+				f(*getPool<IncludedTypes>().components.get(entityIdx)...);
+			}
+		}
+	}
+
+	template<typename ...IncludedTypes, typename ...ExcludedTypes>
+	template<typename Func>
+	inline void ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::iterateMultiWithExcludes(Func f)
+	{
+		// Iterate entity indices from the first included pool and check all included and excluded components
+		auto& sparseSet = std::get<0>(m_includedPools)->components;
+		const auto& elemToIdx = sparseSet.getElemToIdx();
+		const size_t size = sparseSet.size();
+
+		for (size_t i = 0; i < size; i++)
+		{
+			const auto entityIdx = elemToIdx[i];
+			const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(entityIdx) && ...);
+			const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(entityIdx) || ...);
+
+			const bool hasCorrectComponents = hasAllIncluded && !hasAnyExcluded;
+
+			if (hasCorrectComponents)
+			{
+				f(*getPool<IncludedTypes>().components.get(entityIdx)...);
 			}
 		}
 	}

@@ -30,9 +30,6 @@
     <ClInclude Include="ECS\Components\ComponentView.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ECS\Benchmarks\Benchmarks.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ECS\pch_ECS.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
