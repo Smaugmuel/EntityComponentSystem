@@ -163,7 +163,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\Components\Components.hpp" />
+    <ClInclude Include="Application\Components\ApplicationComponents.hpp" />
     <ClInclude Include="Application\Experiments.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

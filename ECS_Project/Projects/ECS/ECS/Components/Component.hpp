@@ -61,4 +61,10 @@ namespace ECS
 	protected:
 		Component() = default;
 	};
+
+
+	/*
+		Empty type used only when making and checking if a component is a singleton
+	*/
+	struct SingletonComponent { };
 }

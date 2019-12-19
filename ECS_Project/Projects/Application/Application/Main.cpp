@@ -1,5 +1,5 @@
 #include "ECS/ECSManager.hpp"
-#include "Components/Components.hpp"
+#include "Components/ApplicationComponents.hpp"
 #include "Utilities/Timer.hpp"
 #include <iostream>
 
@@ -55,6 +55,11 @@ int main()
 
 	constexpr float nsToS = 1.0f / static_cast<float>(1e9);
 
+
+	ECS::is_singleton_component<Position>::value;
+	ECS::is_singleton_component<Gravity>::value;
+	ECS::is_singleton_component<Commands>::value;
+	ECS::is_singleton_component<Input>::value;
 
 	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<>>::INCLUDED_MASK;
 	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<Gravity, Position>>::INCLUDED_MASK;

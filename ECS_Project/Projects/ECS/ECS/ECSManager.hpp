@@ -7,12 +7,19 @@
 
 namespace ECS
 {
-	template<typename CompType>
-	using is_component = std::is_base_of<Component<CompType>, CompType>;
+	// Evaluates to true if type T is a component
+	template<typename T>
+	using is_component = std::is_base_of<Component<T>, T>;
 
-	template<typename CompType, typename ReturnType>
-	using enable_if_component = typename std::enable_if_t<is_component<CompType>::value, ReturnType>;
+	// Evaluates to type R if type T is a component
+	template<typename T, typename R>
+	using enable_if_component = typename std::enable_if_t<is_component<T>::value, R>;
 
+	// Evaluates to true if type T is a singleton component
+	template<typename T>
+	using is_singleton_component = std::is_base_of<SingletonComponent, T>;
+
+	// Data type used for the component bitmask
 	using Bitmask = size_t;
 
 	class ECSManager final
