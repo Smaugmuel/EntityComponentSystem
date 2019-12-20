@@ -1,9 +1,16 @@
 #pragma once
 #include "ECS/Components/Component.hpp"
 
+// Used to never inherit from the wrong component type
 #define COMPONENT_TYPE(x) struct x : public ECS::Component<x>
+
+// Used to never make ID an invalid type
 #define COMPONENT_ID(x) static constexpr unsigned char ID = x
+
+// Used to make components singletons. Do not use on non-component types
 #define MAKE_SINGLETON , public ECS::SingletonComponent
+
+// Abbreviates the command declarations
 #define COMMAND(x) bool x = false
 
 COMPONENT_TYPE(Position)
@@ -46,10 +53,22 @@ COMPONENT_TYPE(Commands) MAKE_SINGLETON
 
 	Commands() = default;
 
-	COMMAND(isWalkingForward);
-	COMMAND(isWalkingBackward);
-	COMMAND(isWalkingRight);
-	COMMAND(isWalkingLeft);
-	COMMAND(isJumping);
+	void reset()
+	{
+		isMovingForward = false;
+		isMovingBackward = false;
+		isMovingRight = false;
+		isMovingLeft = false;
+		isMovingUp = false;
+		isMovingDown = false;
+		isShooting = false;
+	}
+
+	COMMAND(isMovingForward);
+	COMMAND(isMovingBackward);
+	COMMAND(isMovingRight);
+	COMMAND(isMovingLeft);
+	COMMAND(isMovingUp);
+	COMMAND(isMovingDown);
 	COMMAND(isShooting);
 };

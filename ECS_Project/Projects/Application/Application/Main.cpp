@@ -43,6 +43,22 @@ void gravitySystem(ECS::ECSManager& em, float dt)
 	);
 }
 
+void commandFiller(ECS::ECSManager& em, float dt)
+{
+	auto view = em.getView<Input, Commands>();
+	view.for_each_entity([](Input& input, Commands& commands)
+		{
+			commands.reset();
+
+			if (input.keysDown['W']) commands.isMovingForward = true;
+			if (input.keysDown['S']) commands.isMovingBackward = true;
+			if (input.keysDown['D']) commands.isMovingRight = true;
+			if (input.keysDown['A']) commands.isMovingLeft = true;
+			//if (input.keysDown['SPACE']) commands.isMovingUp = true;
+		}
+	);
+}
+
 int main()
 {
 	ECS::ECSManager em;
@@ -54,7 +70,6 @@ int main()
 	}
 
 	constexpr float nsToS = 1.0f / static_cast<float>(1e9);
-
 
 	ECS::is_singleton_component<Position>::value;
 	ECS::is_singleton_component<Gravity>::value;

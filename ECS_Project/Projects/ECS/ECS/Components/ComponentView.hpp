@@ -30,7 +30,7 @@ namespace ECS
 
 	public:
 		ComponentView(ComponentPool<IncludedTypes>*... includedPools, ComponentPool<ExcludedTypes>*... excludedPools) : 
-			m_includedPools{ includedPools }, m_excludedPools{ excludedPools } {}
+			m_includedPools{ includedPools... }, m_excludedPools{ excludedPools... } {}
 		ComponentView(const ComponentView& other) = default;
 		~ComponentView() = default;
 		ComponentView& operator=(const ComponentView& other) = default;

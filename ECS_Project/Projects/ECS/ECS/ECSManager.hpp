@@ -71,7 +71,7 @@ namespace ECS
 
 #pragma region Internal Template Declarations
 		template<typename CompType>
-		constexpr ComponentTypeID getID() const noexcept;
+		static constexpr ComponentTypeID getID() noexcept;
 
 		template<typename CompType>
 		bool hasPool() const;
@@ -98,6 +98,8 @@ namespace ECS
 
 		// Pools where components are stored
 		std::vector<BaseComponentPool*> m_componentPools;
+
+		
 
 		// Previously created, but later invalidated, entity IDs
 		std::vector<EntityID> m_invalidEntityIDs;
@@ -184,10 +186,10 @@ namespace ECS
 
 #pragma region Internal Template Definitions
 	template<typename CompType>
-	inline constexpr ComponentTypeID ECSManager::getID() const noexcept
+	inline constexpr ComponentTypeID ECSManager::getID() noexcept
 	{
 		static_assert(is_component<CompType>::value);
-		return CompType::typeID();
+		return CompType::ID;
 	}
 
 	template<typename CompType>
