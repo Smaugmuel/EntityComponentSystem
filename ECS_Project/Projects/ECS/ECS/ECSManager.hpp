@@ -137,9 +137,10 @@ namespace ECS
 	}
 	
 	template<typename CompType, typename ...TArgs>
-	[[maybe_unused]] inline CompType* ECSManager::attachComponent(EntityID entityID, const TArgs & ...args)
+	[[maybe_unused]] inline CompType* ECSManager::attachComponent(EntityID entityID, const TArgs& ...args)
 	{
 		static_assert(is_component<CompType>::value);
+
 		if (!isValid(entityID))
 		{
 			return nullptr;
@@ -196,7 +197,7 @@ namespace ECS
 	inline bool ECSManager::hasPool() const
 	{
 		static_assert(is_component<CompType>::value);
-		const ComponentTypeID compTypeID = getID<CompType>();
+		static constexpr ComponentTypeID compTypeID = getID<CompType>();
 		return (compTypeID < m_componentPools.size() && m_componentPools[compTypeID]);
 	}
 
@@ -204,7 +205,7 @@ namespace ECS
 	inline void ECSManager::createPool()
 	{
 		static_assert(is_component<CompType>::value);
-		const size_t compTypeID = static_cast<const size_t>(getID<CompType>());
+		static constexpr size_t compTypeID = static_cast<const size_t>(getID<CompType>());
 		if (compTypeID >= m_componentPools.size())
 		{
 			m_componentPools.resize(compTypeID + 1, nullptr);
@@ -220,7 +221,7 @@ namespace ECS
 	inline ComponentPool<CompType>* ECSManager::getPool()
 	{
 		static_assert(is_component<CompType>::value);
-		const ComponentTypeID compTypeID = getID<CompType>();
+		static constexpr ComponentTypeID compTypeID = getID<CompType>();
 		return static_cast<ComponentPool<CompType>*>(m_componentPools[compTypeID]);
 	}
 

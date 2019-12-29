@@ -29,6 +29,7 @@ namespace ECS
 		static_assert(sizeof...(IncludedTypes) > 0, "No included types found");
 
 	public:
+		ComponentView() = delete;
 		ComponentView(ComponentPool<IncludedTypes>*... includedPools, ComponentPool<ExcludedTypes>*... excludedPools) : 
 			m_includedPools{ includedPools... }, m_excludedPools{ excludedPools... } {}
 		ComponentView(const ComponentView& other) = default;
