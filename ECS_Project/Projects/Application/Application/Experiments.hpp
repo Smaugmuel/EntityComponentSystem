@@ -120,6 +120,14 @@ constexpr typename std::enable_if_t<static_cast<bool>(std::conjunction<std::is_s
 	return sizeof...(TS) + 1;
 }
 
+template<typename T, bool condition>
+void checkIfValidWithParameter(char arg1, float arg2, std::enable_if_t<condition, int> check = 0)
+{
+	// Type of enable_if must be default set (int = 0   or   double = 0.0)
+	// Casts are valid though (char = 3.421   will   become char = '\003')
+}
+
+
 #pragma endregion
 
 void checkThings()
@@ -150,7 +158,7 @@ void checkThings()
 
 	int_to_type<4, int, float, double, char, short>::T;
 
-
+	checkIfValidWithParameter<double, true>('2', 2.0f);
 }
 
 void testSwitch()

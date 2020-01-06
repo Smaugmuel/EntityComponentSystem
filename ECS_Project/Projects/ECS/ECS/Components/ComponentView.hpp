@@ -26,7 +26,12 @@ namespace ECS
 	template<typename... IncludedTypes, typename... ExcludedTypes>
 	class ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>  final
 	{
+		// Abbreviation of a type
+		using any_common_comps = has_any_common<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>;
+
 		static_assert(sizeof...(IncludedTypes) > 0, "No included types found");
+		static_assert(!any_common_comps::value, "Included and excluded share a type");
+
 
 	public:
 		ComponentView() = delete;
@@ -74,7 +79,7 @@ namespace ECS
 	template<typename CompType>
 	inline CompType * ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::get(const EntityID entityID)
 	{
-		static_assert(static_cast<bool>(is_any_of<CompType, IncludedTypes...>::value), "CompType is not an included type");
+		static_assert(is_any_of_v<CompType, IncludedTypes...>, "CompType is not an included type");
 		return getPool<CompType>().components.get(entityID);
 	}
 	
@@ -82,15 +87,15 @@ namespace ECS
 	template<typename CompType>
 	inline ComponentPool<CompType>& ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::getPool()
 	{
-		constexpr bool is_included = static_cast<bool>(is_any_of<CompType, IncludedTypes...>::value);
-		constexpr bool is_excluded = static_cast<bool>(is_any_of<CompType, ExcludedTypes...>::value);
+		constexpr bool is_included = is_any_of_v<CompType, IncludedTypes...>;
+		constexpr bool is_excluded = is_any_of_v<CompType, ExcludedTypes...>;
 		static_assert(static_cast<bool>(is_included || is_excluded), "CompType is not an included or excluded type");
 
 		if constexpr (is_included)
 		{
 			return *std::get<ComponentPool<CompType>*>(m_includedPools);
 		}
-		else  // This else MUST remain, due to compile-time checks
+		else // This else MUST remain, due to compile-time checks
 		{
 			return *std::get<ComponentPool<CompType>*>(m_excludedPools);
 		}

@@ -1,7 +1,7 @@
 #pragma once
 #include <time.h>
 #include "Utilities/Timer.hpp"
-#include "ECS/ECSManager.hpp"
+#include "ECSManager.hpp"
 
 namespace Benchmark
 {

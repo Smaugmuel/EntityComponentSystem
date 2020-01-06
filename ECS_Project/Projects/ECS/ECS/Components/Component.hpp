@@ -3,36 +3,10 @@
 namespace ECS
 {
 	using ComponentTypeID = unsigned char;
-
-	/*
-		Do not inherit directly from BaseComponent
-		See Component below
-	*/
-	struct BaseComponent
-	{
-		virtual ~BaseComponent() = default;
-		bool valid() const { return m_valid; }
-	protected:
-		BaseComponent() : m_valid(true) {}
-		bool m_valid;
-	};
-
-	/*
-		Components must inherit from this struct, i.e. like
-		struct Movement : public Component<Movement>
-	*/
-	template<typename T>
-	struct Component : public BaseComponent
-	{
-		virtual ~Component() = default;
-	protected:
-		Component() = default;
-	};
-
-
-	/*
-		Empty type inherited from when declaring a singleton component
-		Prefer to use the MAKE_SINGLETON define instead of inheriting from this manually
-	*/
-	struct SingletonComponent {	};
 }
+
+// Used to never make ID an invalid type
+#define COMPONENT_ID(x) static constexpr ECS::ComponentTypeID ID = x
+
+// Used as a singleton component tag
+#define MAKE_SINGLETON static constexpr bool IS_SINGLETON = true

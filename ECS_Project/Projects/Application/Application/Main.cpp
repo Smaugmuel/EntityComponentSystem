@@ -43,7 +43,7 @@ void gravitySystem(ECS::ECSManager& em, float dt)
 	);
 }
 
-void commandFiller(ECS::ECSManager& em, float dt)
+void commandFiller(ECS::ECSManager& em, [[maybe_unused]] float dt)
 {
 	auto view = em.getView<Input, Commands>();
 	view.for_each_entity([](Input& input, Commands& commands)
@@ -71,16 +71,15 @@ int main()
 
 	constexpr float nsToS = 1.0f / static_cast<float>(1e9);
 
-	ECS::is_singleton_component<Position>::value;
-	ECS::is_singleton_component<Gravity>::value;
-	ECS::is_singleton_component<Commands>::value;
-	ECS::is_singleton_component<Input>::value;
+	ECS::is_singleton<Position>::value;
+	ECS::is_singleton<Gravity>::value;
+	ECS::is_singleton<Commands>::value;
+	ECS::is_singleton<Input>::value;
 
 	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<>>::INCLUDED_MASK;
 	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<Gravity, Position>>::INCLUDED_MASK;
 	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<Gravity, Position>>::EXCLUDED_MASK;
 	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<>>::EXCLUDED_MASK;
-
 
 	Timer::Stopped timer("10'000 iterations");
 	for (size_t i = 0; i < 10'000; i++)

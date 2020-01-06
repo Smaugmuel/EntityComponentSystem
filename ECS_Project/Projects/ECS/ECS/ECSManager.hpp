@@ -7,17 +7,21 @@
 
 namespace ECS
 {
+	// Default evaluates to false
+	template<typename T, typename Attempt = void>
+	struct is_component : public std::false_type {};
+
 	// Evaluates to true if type T is a component
 	template<typename T>
-	using is_component = std::is_base_of<Component<T>, T>;
+	struct is_component<T, std::void_t<decltype(T::ID)>> : public std::true_type {};
 
-	// Evaluates to type R if type T is a component
-	template<typename T, typename R>
-	using enable_if_component = typename std::enable_if_t<is_component<T>::value, R>;
+	// Default evaluates to false
+	template<typename T, typename Attempt = void>
+	struct is_singleton : public std::false_type {};
 
-	// Evaluates to true if type T is a singleton component
+	// Evaluates to true if type T is singleton
 	template<typename T>
-	using is_singleton_component = std::is_base_of<SingletonComponent, T>;
+	struct is_singleton<T, std::void_t<decltype(T::IS_SINGLETON)>> : public std::true_type {};
 
 	// Data type used for the component bitmask
 	using Bitmask = size_t;
@@ -99,8 +103,6 @@ namespace ECS
 		// Pools where components are stored
 		std::vector<BaseComponentPool*> m_componentPools;
 
-		
-
 		// Previously created, but later invalidated, entity IDs
 		std::vector<EntityID> m_invalidEntityIDs;
 	};
@@ -109,22 +111,23 @@ namespace ECS
 	template<typename ...IncludedTypes, typename ...ExcludedTypes>
 	[[nodiscard]] inline ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>> ECSManager::getView(TypeList<ExcludedTypes...>)
 	{
-		static_assert(sizeof...(IncludedTypes) > 0, "ECS::ECSManager::getComponents() : No included types");
-		//static_assert(std::disjunction<is_any_of<IncludedTypes, ExcludedTypes...>::value...>::value);		// Make this work somehow	
+		static_assert(sizeof...(IncludedTypes) > 0, "No included types");
+		static_assert(!has_any_common<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::value, "Included and excluded share a type");
+		
 		return { getPool<IncludedTypes>()..., getPool<ExcludedTypes>()... };
 	}
 
 	template<typename CompType>
 	[[nodiscard]] inline bool ECSManager::hasComponent(const Entity& entity) const
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		return hasComponent<CompType>(entity.ID);
 	}
 
 	template<typename CompType>
 	inline bool ECSManager::hasComponent(EntityID entityID) const
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		// 1 means maximum 32 bit shift. 1ULL means maximum 64 bit shift
 		return (m_componentMasks[entityID] & (1ULL << getID<CompType>()));
 	}
@@ -132,14 +135,14 @@ namespace ECS
 	template<typename CompType, typename ...TArgs>
 	[[maybe_unused]] inline CompType* ECSManager::attachComponent(const Entity& entity, const TArgs& ...args)
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		return attachComponent<CompType, TArgs...>(entity.ID, args...);
 	}
 	
 	template<typename CompType, typename ...TArgs>
 	[[maybe_unused]] inline CompType* ECSManager::attachComponent(EntityID entityID, const TArgs& ...args)
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 
 		if (!isValid(entityID))
 		{
@@ -164,7 +167,7 @@ namespace ECS
 	template<typename CompType>
 	inline void ECSManager::detachComponent(const Entity & entity)
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		
 		bool canBeDetached = isValid(entity.ID) && hasPool<CompType>() && hasComponent<CompType>(entity);
 		if (!canBeDetached)
@@ -189,14 +192,14 @@ namespace ECS
 	template<typename CompType>
 	inline constexpr ComponentTypeID ECSManager::getID() noexcept
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		return CompType::ID;
 	}
 
 	template<typename CompType>
 	inline bool ECSManager::hasPool() const
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		static constexpr ComponentTypeID compTypeID = getID<CompType>();
 		return (compTypeID < m_componentPools.size() && m_componentPools[compTypeID]);
 	}
@@ -204,7 +207,7 @@ namespace ECS
 	template<typename CompType>
 	inline void ECSManager::createPool()
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		static constexpr size_t compTypeID = static_cast<const size_t>(getID<CompType>());
 		if (compTypeID >= m_componentPools.size())
 		{
@@ -220,7 +223,7 @@ namespace ECS
 	template<typename CompType>
 	inline ComponentPool<CompType>* ECSManager::getPool()
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		static constexpr ComponentTypeID compTypeID = getID<CompType>();
 		return static_cast<ComponentPool<CompType>*>(m_componentPools[compTypeID]);
 	}
@@ -228,14 +231,14 @@ namespace ECS
 	template<typename CompType>
 	inline void ECSManager::addToBitMask(EntityID entityID)
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		m_componentMasks[entityID] |= (1ULL << getID<CompType>());
 	}
 
 	template<typename CompType>
 	inline void ECSManager::removeFromBitMask(EntityID entityID)
 	{
-		static_assert(is_component<CompType>::value);
+		static_assert(is_component<CompType>::value, "Not a component");
 		m_componentMasks[entityID] &= ~(1ULL << getID<CompType>());
 	}
 #pragma endregion
