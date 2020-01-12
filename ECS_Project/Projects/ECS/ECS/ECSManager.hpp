@@ -7,29 +7,9 @@
 
 namespace ECS
 {
-	// Default evaluates to false
-	template<typename T, typename Attempt = void>
-	struct is_component : public std::false_type {};
-
-	// Evaluates to true if type T is a component
-	template<typename T>
-	struct is_component<T, std::void_t<decltype(T::ID)>> : public std::true_type {};
-
-	// Default evaluates to false
-	template<typename T, typename Attempt = void>
-	struct is_singleton : public std::false_type {};
-
-	// Evaluates to true if type T is singleton
-	template<typename T>
-	struct is_singleton<T, std::void_t<decltype(T::IS_SINGLETON)>> : public std::true_type {};
-
-	// Data type used for the component bitmask
-	using Bitmask = size_t;
-
 	class ECSManager final
 	{
 	public:
-#pragma region Interface Declarations
 		ECSManager() = default;
 		~ECSManager();
 
@@ -40,9 +20,7 @@ namespace ECS
 		void reserveEntities(const size_t COUNT);
 		void destroyEntity(const EntityID entityID);
 		void clearEntities();
-#pragma endregion
 
-#pragma region Interface Template Declarations
 		template<typename... IncludedTypes, typename... ExcludedTypes>
 		[[nodiscard]] ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>> getView(TypeList<ExcludedTypes...> = {});
 
@@ -61,19 +39,15 @@ namespace ECS
 
 		template<typename CompType>
 		[[nodiscard]] size_t sizeOfPool() const;
-#pragma endregion
 
 	private:
-#pragma region Internal Declarations
 		bool hasInvalidEntities() const noexcept;
 		EntityID getAndPopLastInvalidEntityID();
 		EntityID createNewEntity();
 		void resetAndValidateEntity(const EntityID entityID);
 		void resetComponentMask(const EntityID entityID);
 		void invalidateEntity(const EntityID entityID);
-#pragma endregion
 
-#pragma region Internal Template Declarations
 		template<typename CompType>
 		static constexpr ComponentTypeID getID() noexcept;
 
@@ -91,7 +65,6 @@ namespace ECS
 
 		template<typename CompType>
 		void removeFromBitMask(EntityID entityID);
-#pragma endregion
 
 	private:
 		// Bitwise representation of which components each entity has
@@ -107,7 +80,11 @@ namespace ECS
 		std::vector<EntityID> m_invalidEntityIDs;
 	};
 
-#pragma region Interface Template Definitions
+
+	/****************
+	** Definitions **
+	****************/
+
 	template<typename ...IncludedTypes, typename ...ExcludedTypes>
 	[[nodiscard]] inline ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>> ECSManager::getView(TypeList<ExcludedTypes...>)
 	{
@@ -186,9 +163,6 @@ namespace ECS
 		return getPool<CompType>()->components.size();
 	}
 
-#pragma endregion
-
-#pragma region Internal Template Definitions
 	template<typename CompType>
 	inline constexpr ComponentTypeID ECSManager::getID() noexcept
 	{
@@ -241,5 +215,4 @@ namespace ECS
 		static_assert(is_component<CompType>::value, "Not a component");
 		m_componentMasks[entityID] &= ~(1ULL << getID<CompType>());
 	}
-#pragma endregion
 }

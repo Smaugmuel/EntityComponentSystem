@@ -9,9 +9,6 @@
 // A representation of several data types without any stored data
 template<typename... T> struct TypeList {};
 
-// Default type to allow TypeListing below
-template<typename... T> struct has_any_common {};
-
 
 /*
 	Bool expressions
@@ -27,6 +24,9 @@ struct is_any_of
 // Abbrevieated value
 template<typename T, typename... Ts>
 inline constexpr bool is_any_of_v = is_any_of<T, Ts...>::value;
+
+// Default type to allow TypeListing below
+template<typename... T> struct has_any_common {};
 
 // Evaluates to true if any of the types T are found in the types R
 template<typename... T, typename... R>
@@ -63,4 +63,4 @@ using enable_if_any_of_t = typename enable_if_any_of<T, Ts...>::type;
 
 // Maps an int to a type
 template<int index, typename... Types>
-struct int_to_type { using T = typename std::tuple_element<index, std::tuple<Types...>>::type; };
+struct int_to_type { using type = typename std::tuple_element<index, std::tuple<Types...>>::type; };

@@ -156,7 +156,7 @@ void checkThings()
 
 	constexpr int N_ARGS = enable_if_all_same(4, 3, 54);
 
-	int_to_type<4, int, float, double, char, short>::T;
+	int_to_type<4, int, float, double, char, short>::type;
 
 	checkIfValidWithParameter<double, true>('2', 2.0f);
 }
