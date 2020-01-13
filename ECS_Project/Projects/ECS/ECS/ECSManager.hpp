@@ -4,9 +4,19 @@
 #include "Components/ComponentPool.hpp"
 #include "Components/ComponentView.hpp"
 #include "Utilities/HelperTemplates.hpp"
+#include "ECSTemplates.hpp"
 
 namespace ECS
 {
+	/*********************
+	** Type definitions **
+	*********************/
+	using Bitmask = size_t;
+
+
+	/*****************
+	** Declarations **
+	*****************/
 	class ECSManager final
 	{
 	public:
@@ -132,13 +142,30 @@ namespace ECS
 
 		ComponentPool<CompType>* pool = getPool<CompType>();
 
-		if (!hasComponent<CompType>(entityID))
+		if constexpr (is_singleton<CompType>::value)
 		{
-			pool->components.add(entityID, args...);
-			addToBitMask<CompType>(entityID);
-		}
+			if (pool->components.size() == 0)
+			{
+				pool->components.add(0, args...);
+			}
 
-		return pool->components.get(entityID);
+			if (!hasComponent<CompType>(entityID))
+			{
+				addToBitMask<CompType>(entityID);
+			}
+
+			return pool->components.get(0);
+		}
+		else
+		{
+			if (!hasComponent<CompType>(entityID))
+			{
+				pool->components.add(entityID, args...);
+				addToBitMask<CompType>(entityID);
+			}
+
+			return pool->components.get(entityID);
+		}
 	}
 
 	template<typename CompType>

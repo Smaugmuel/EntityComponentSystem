@@ -1,6 +1,7 @@
 #pragma once
 #include "ComponentPool.hpp"
 #include "Utilities/HelperTemplates.hpp"
+#include "ECSTemplates.hpp"
 
 namespace ECS
 {
@@ -80,7 +81,15 @@ namespace ECS
 	inline CompType * ComponentView<TypeList<IncludedTypes...>, TypeList<ExcludedTypes...>>::get(const EntityID entityID)
 	{
 		static_assert(is_any_of_v<CompType, IncludedTypes...>, "CompType is not an included type");
-		return getPool<CompType>().components.get(entityID);
+
+		if constexpr (is_singleton<CompType>::value)
+		{
+			return getPool<CompType>().components.get(0);
+		}
+		else
+		{
+			return getPool<CompType>().components.get(entityID);
+		}
 	}
 	
 	template<typename ...IncludedTypes, typename ...ExcludedTypes>

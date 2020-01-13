@@ -50,10 +50,10 @@ void commandFiller(ECS::ECSManager& em, [[maybe_unused]] float dt)
 		{
 			commands.reset();
 
-			if (input.keysDown['W']) commands.isMovingForward = true;
-			if (input.keysDown['S']) commands.isMovingBackward = true;
-			if (input.keysDown['D']) commands.isMovingRight = true;
-			if (input.keysDown['A']) commands.isMovingLeft = true;
+			commands.isMovingForward = input.keysDown['W'];
+			commands.isMovingBackward = input.keysDown['S'];
+			commands.isMovingRight = input.keysDown['D'];
+			commands.isMovingLeft = input.keysDown['A'];
 			//if (input.keysDown['SPACE']) commands.isMovingUp = true;
 		}
 	);

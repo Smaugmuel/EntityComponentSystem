@@ -172,6 +172,7 @@
     <ClInclude Include="ECS\Components\ComponentPool.hpp" />
     <ClInclude Include="ECS\Components\ComponentView.hpp" />
     <ClInclude Include="ECS\ECSManager.hpp" />
+    <ClInclude Include="ECS\ECSTemplates.hpp" />
     <ClInclude Include="ECS\Entity.h" />
     <ClInclude Include="ECS\pch_ECS.hpp" />
   </ItemGroup>

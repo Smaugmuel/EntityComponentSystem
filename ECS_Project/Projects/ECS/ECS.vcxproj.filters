@@ -36,6 +36,9 @@
     <ClInclude Include="ECS\Benchmarks\ECSManagerBenchmarks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\ECSTemplates.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS\ECSManager.cpp">
