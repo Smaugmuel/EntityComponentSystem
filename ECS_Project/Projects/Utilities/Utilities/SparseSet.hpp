@@ -33,7 +33,7 @@ public:
 		expandToFit(index);
 
 		// Element on this index already exists
-		if (m_idxToElem[index] != -1)
+		if (m_indexToElem[index] != -1)
 		{
 			return true;
 		}
@@ -51,28 +51,28 @@ public:
 		}
 
 		// Indices which will be linked after removal of element
-		const IndexType movedLinkIdx = m_elemToIdx.back();
-		const IndexType movedElemIdx = m_idxToElem[index];
+		const IndexType movedLinkIndex = m_elemToIndex.back();
+		const IndexType movedElemIndex = m_indexToElem[index];
 
 		// Move element and redirect links
-		m_elements[movedElemIdx] = m_elements.back();
-		m_elemToIdx[movedElemIdx] = movedLinkIdx;
-		m_idxToElem[movedLinkIdx] = movedElemIdx;
+		m_elements[movedElemIndex] = m_elements.back();
+		m_elemToIndex[movedElemIndex] = movedLinkIndex;
+		m_indexToElem[movedLinkIndex] = movedElemIndex;
 
 		// Remove last element and remove links
 		m_elements.pop_back();
-		m_elemToIdx.pop_back();
-		m_idxToElem[index] = -1;
+		m_elemToIndex.pop_back();
+		m_indexToElem[index] = -1;
 
 		return true;
 	}
 	bool has(IndexType index) const
 	{
-		return ((index >= 0 && index < static_cast<IndexType>(m_idxToElem.size())) && m_idxToElem[index] != -1);
+		return ((index >= 0 && index < static_cast<IndexType>(m_indexToElem.size())) && m_indexToElem[index] != -1);
 	}
 	T* get(IndexType index)
 	{
-		return (has(index) ? &m_elements[m_idxToElem[index]] : nullptr);
+		return (has(index) ? &m_elements[m_indexToElem[index]] : nullptr);
 	}
 	size_t size() const noexcept
 	{
@@ -84,13 +84,13 @@ public:
 		return m_elements;
 	}
 
-	const std::vector<IndexType>& getIdxToElem() const noexcept
+	const std::vector<IndexType>& getIndexToElem() const noexcept
 	{
-		return m_idxToElem;
+		return m_indexToElem;
 	}
-	const std::vector<IndexType>& getElemToIdx() const noexcept
+	const std::vector<IndexType>& getElemToIndex() const noexcept
 	{
-		return m_elemToIdx;
+		return m_elemToIndex;
 	}
 
 	size_t getByteSize() const
@@ -98,17 +98,17 @@ public:
 		size_t size = 0;
 		size += sizeof(*this);
 		size += sizeof(T) * m_elements.capacity();
-		size += sizeof(IndexType) * (m_idxToElem.capacity() + m_elemToIdx.capacity());
+		size += sizeof(IndexType) * (m_indexToElem.capacity() + m_elemToIndex.capacity());
 		return size;
 	}
 
 private:
 	void expandToFit(IndexType index)
 	{
-		size_t idx = static_cast<size_t>(index);
-		if (idx >= m_idxToElem.size())
+		size_t index_ = static_cast<size_t>(index);
+		if (index_ >= m_indexToElem.size())
 		{
-			m_idxToElem.resize(idx + 1, -1);
+			m_indexToElem.resize(index_ + 1, -1);
 		}
 	}
 
@@ -118,12 +118,12 @@ private:
 		m_elements.emplace_back(args...);
 
 		// Index is assumed to be valid
-		m_idxToElem[index] = static_cast<IndexType>(m_elements.size()) - 1;
-		m_elemToIdx.emplace_back(index);
+		m_indexToElem[index] = static_cast<IndexType>(m_elements.size()) - 1;
+		m_elemToIndex.emplace_back(index);
 	}
 
 private:
 	std::vector<value_type> m_elements;		// size = nr of elements
-	std::vector<IndexType> m_elemToIdx;		// size = nr of elements
-	std::vector<IndexType> m_idxToElem;		// size = highest index used
+	std::vector<IndexType> m_elemToIndex;		// size = nr of elements
+	std::vector<IndexType> m_indexToElem;		// size = highest index used
 };

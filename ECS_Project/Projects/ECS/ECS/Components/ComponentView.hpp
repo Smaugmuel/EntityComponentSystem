@@ -127,13 +127,13 @@ namespace ECS
 			// Iterate components from the first included pool directly and retrieve entity indices to check excluded components
 			auto& sparseSet = std::get<0>(m_includedPools)->components;
 			auto& components = sparseSet.getElements();
-			const auto& elemToIdx = sparseSet.getElemToIdx();
+			const auto& elemToIndex = sparseSet.getElemToIndex();
 			const size_t size = sparseSet.size();
 
 			for (size_t i = 0; i < size; i++)
 			{
-				const auto entityIdx = elemToIdx[i];
-				const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(entityIdx) || ...);
+				const auto entityIndex = elemToIndex[i];
+				const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(entityIndex) || ...);
 				if (!hasAnyExcluded)
 				{
 					f(components[i]);
@@ -145,16 +145,16 @@ namespace ECS
 		{
 			// Iterate entity indices from the first included pool and check all included components
 			auto& sparseSet = std::get<0>(m_includedPools)->components;
-			const auto& elemToIdx = sparseSet.getElemToIdx();
+			const auto& elemToIndex = sparseSet.getElemToIndex();
 			const size_t size = sparseSet.size();
 
 			for (size_t i = 0; i < size; i++)
 			{
-				const auto entityIdx = elemToIdx[i];
-				const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(entityIdx) || ...);
+				const auto entityIndex = elemToIndex[i];
+				const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(entityIndex) || ...);
 				if (hasAllIncluded)
 				{
-					f(*getPool<IncludedTypes>().components.get(entityIdx)...);
+					f(*getPool<IncludedTypes>().components.get(entityIndex)...);
 				}
 			}
 		}
@@ -163,20 +163,20 @@ namespace ECS
 		{
 			// Iterate entity indices from the first included pool and check all included and excluded components
 			auto& sparseSet = std::get<0>(m_includedPools)->components;
-			const auto& elemToIdx = sparseSet.getElemToIdx();
+			const auto& elemToIndex = sparseSet.getElemToIndex();
 			const size_t size = sparseSet.size();
 
 			for (size_t i = 0; i < size; i++)
 			{
-				const auto entityIdx = elemToIdx[i];
-				const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(entityIdx) && ...);
-				const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(entityIdx) || ...);
+				const auto entityIndex = elemToIndex[i];
+				const bool hasAllIncluded = (getPool<IncludedTypes>().components.has(entityIndex) && ...);
+				const bool hasAnyExcluded = (getPool<ExcludedTypes>().components.has(entityIndex) || ...);
 
 				const bool hasCorrectComponents = hasAllIncluded && !hasAnyExcluded;
 
 				if (hasCorrectComponents)
 				{
-					f(*getPool<IncludedTypes>().components.get(entityIdx)...);
+					f(*getPool<IncludedTypes>().components.get(entityIndex)...);
 				}
 			}
 		}
