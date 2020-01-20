@@ -27,13 +27,13 @@ namespace ECS
 
 		return Entity(entityID);
 	}
-	[[nodiscard]] Bitmask ECSManager::getComponentMask(const EntityID id) const
+	[[nodiscard]] Bitmask ECSManager::getComponentMask(const EntityID entityID) const
 	{
-		return m_componentMasks[id];
+		return m_componentMasks[entityID];
 	}
-	[[nodiscard]] bool ECSManager::isValid(const EntityID ID) const
+	[[nodiscard]] bool ECSManager::isValid(const EntityID entityID) const
 	{
-		return m_isValidEntity[ID];
+		return m_isValidEntity[entityID];
 	}
 
 	void ECSManager::reserveEntities(const size_t COUNT)

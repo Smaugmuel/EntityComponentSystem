@@ -59,7 +59,23 @@ void commandFiller(ECS::ECSManager& em, [[maybe_unused]] float dt)
 	);
 }
 
-int main()
+void lifeTimeSystem(ECS::ECSManager& em, [[maybe_unused]] float dt)
+{
+	auto view = em.getView<LifeTime>();
+	view.for_each_entity([dt](LifeTime& lifeTime)
+		{
+			if (lifeTime.remainingTime -= dt < 0.0f)
+			{
+				// Destroy entity
+				// Validity should be set immediately
+				// Destruction should be queued and not happen immediately
+			}
+		}
+	);
+}
+
+
+void test1()
 {
 	ECS::ECSManager em;
 	Timer::TimePoint tp1, tp2;
@@ -70,16 +86,6 @@ int main()
 	}
 
 	constexpr float nsToS = 1.0f / static_cast<float>(1e9);
-
-	ECS::is_singleton<Position>::value;
-	ECS::is_singleton<Gravity>::value;
-	ECS::is_singleton<Commands>::value;
-	ECS::is_singleton<Input>::value;
-
-	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<>>::INCLUDED_MASK;
-	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<Gravity, Position>>::INCLUDED_MASK;
-	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<Gravity, Position>>::EXCLUDED_MASK;
-	ECS::ComponentView<TypeList<Movement, Acceleration>, TypeList<>>::EXCLUDED_MASK;
 
 	Timer::Stopped timer("10'000 iterations");
 	for (size_t i = 0; i < 10'000; i++)
@@ -98,6 +104,16 @@ int main()
 	{
 		std::cout << label << ": " << static_cast<double>(time) / 1e6 << "ms\n";
 	}
+}
 
+
+int main()
+{
+	ECS::ECSManager em;
+	auto entity = em.createEntity();
+	em.attachComponent<TestingCopies>(entity.ID, Data{ 3.4f, 25.2f, 64.53f, 1.4f });
+
+
+	std::cin.get();
 	return 0;
 }

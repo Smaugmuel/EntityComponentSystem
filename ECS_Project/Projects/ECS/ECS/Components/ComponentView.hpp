@@ -17,7 +17,7 @@ namespace ECS
 		}
 		else
 		{
-			return ((1 << T::ID) | ...);
+			return ((1 << T::TYPE_ID) | ...);
 		}
 	}
 

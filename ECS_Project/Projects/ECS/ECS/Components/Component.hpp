@@ -10,7 +10,7 @@ namespace ECS
 }
 
 // Used to never make ID an invalid type
-#define COMPONENT_ID(x) static constexpr ECS::ComponentTypeID ID = x
+#define COMPONENT_ID(x) static constexpr ECS::ComponentTypeID TYPE_ID = x
 
 // Used as a singleton component tag
 #define MAKE_SINGLETON static constexpr bool IS_SINGLETON = true

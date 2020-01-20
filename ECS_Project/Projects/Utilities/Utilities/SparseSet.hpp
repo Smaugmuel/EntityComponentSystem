@@ -21,8 +21,8 @@ public:
 
 	SparseSet& operator=(const SparseSet& other) = delete;
 
-	template<typename... TArgs>
-	bool add(IndexType index, const TArgs& ... args)
+	template<typename... Args>
+	bool add(IndexType index, const Args& ... args)
 	{
 		// Invalid index
 		if (index < 0)
@@ -112,8 +112,8 @@ private:
 		}
 	}
 
-	template<typename ... TArgs>
-	void addAndLinkElement(IndexType index, const TArgs&... args)
+	template<typename ... Args>
+	void addAndLinkElement(IndexType index, const Args&... args)
 	{
 		m_elements.emplace_back(args...);
 

@@ -8,15 +8,10 @@
 
 namespace ECS
 {
-	/*********************
-	** Type definitions **
-	*********************/
+	// Used to keep track of components of an entity
 	using Bitmask = size_t;
 
 
-	/*****************
-	** Declarations **
-	*****************/
 	class ECSManager final
 	{
 	public:
@@ -24,8 +19,8 @@ namespace ECS
 		~ECSManager();
 
 		[[nodiscard]] Entity createEntity();
-		[[nodiscard]] Bitmask getComponentMask(const EntityID id) const;
-		[[nodiscard]] bool isValid(const EntityID ID) const;
+		[[nodiscard]] Bitmask getComponentMask(const EntityID entityID) const;
+		[[nodiscard]] bool isValid(const EntityID entityID) const;
 
 		void reserveEntities(const size_t COUNT);
 		void destroyEntity(const EntityID entityID);
@@ -54,14 +49,14 @@ namespace ECS
 			return (m_componentMasks[entityID] & (1ULL << getID<CompType>()));
 		}
 
-		template<typename CompType, typename... TArgs>
-		[[maybe_unused]] CompType* attachComponent(const Entity& entity, const TArgs&... args)
+		template<typename CompType, typename... Args>
+		[[maybe_unused]] CompType* attachComponent(const Entity& entity, Args&... args)
 		{
 			static_assert(is_component<CompType>::value, "Not a component");
-			return attachComponent<CompType, TArgs...>(entity.ID, args...);
+			return attachComponent<CompType, Args...>(entity.ID, args...);
 		}
-		template<typename CompType, typename... TArgs>
-		[[maybe_unused]] CompType* attachComponent(EntityID entityID, const TArgs&... args)
+		template<typename CompType, typename... Args>
+		[[maybe_unused]] CompType* attachComponent(EntityID entityID, const Args&... args)
 		{
 			static_assert(is_component<CompType>::value, "Not a component");
 
@@ -129,7 +124,7 @@ namespace ECS
 		static constexpr ComponentTypeID getID() noexcept
 		{
 			static_assert(is_component<CompType>::value, "Not a component");
-			return CompType::ID;
+			return CompType::TYPE_ID;
 		}
 
 		template<typename CompType>
