@@ -13,7 +13,6 @@ class SparseSet final
 {
 public:
 	using IndexType = int;
-	using value_type = T;
 
 	SparseSet() = default;
 	SparseSet(const SparseSet& other) = delete;
@@ -74,16 +73,12 @@ public:
 	{
 		return (has(index) ? &m_elements[m_indexToElem[index]] : nullptr);
 	}
-	size_t size() const noexcept
-	{
-		return m_elements.size();
-	}
 	
-	std::vector<value_type>& getElements() noexcept
+
+	std::vector<T>& getElements() noexcept
 	{
 		return m_elements;
 	}
-
 	const std::vector<IndexType>& getIndexToElem() const noexcept
 	{
 		return m_indexToElem;
@@ -93,13 +88,45 @@ public:
 		return m_elemToIndex;
 	}
 
-	size_t getByteSize() const
+	void sort()
+	{
+		// Shell sort the components by entity index in ascending order
+		const size_t size = m_elements.size();
+		for (size_t gap = size / 2; gap > 0; gap /= 2)
+		{
+			for (size_t i = gap; i < size; i++)
+			{
+				IndexType tempIndexToElem = m_indexToElem[i];
+				IndexType tempElemToIndex = m_elemToIndex[i];
+				T tempElem = m_elements[i];
+				
+				size_t j;
+
+				for (j = i; j >= gap && m_elemToIndex[j - gap] > tempElemToIndex; j -= gap)
+				{
+					m_indexToElem[j] = m_indexToElem[j - gap];
+					m_elemToIndex[j] = m_elemToIndex[j - gap];
+					m_elements[j] = m_elements[j - gap];
+				}
+
+				m_indexToElem[j] = tempIndexToElem;
+				m_elemToIndex[j] = tempElemToIndex;
+				m_elements[j] = tempElem;
+			}
+		}
+	}
+
+	size_t byteSize() const noexcept
 	{
 		size_t size = 0;
 		size += sizeof(*this);
 		size += sizeof(T) * m_elements.capacity();
 		size += sizeof(IndexType) * (m_indexToElem.capacity() + m_elemToIndex.capacity());
 		return size;
+	}
+	size_t size() const noexcept
+	{
+		return m_elements.size();
 	}
 
 private:
@@ -123,7 +150,7 @@ private:
 	}
 
 private:
-	std::vector<value_type> m_elements;		// size = nr of elements
-	std::vector<IndexType> m_elemToIndex;		// size = nr of elements
-	std::vector<IndexType> m_indexToElem;		// size = highest index used
+	std::vector<T> m_elements;				// size = nr of elements
+	std::vector<IndexType> m_elemToIndex;	// size = nr of elements
+	std::vector<IndexType> m_indexToElem;	// size = highest index used
 };

@@ -47,6 +47,8 @@ namespace ECS
 		template<typename Function>
 		void for_each_entity(Function f)
 		{
+			(getPool<IncludedTypes>().components.sort(), ...);
+
 			if constexpr (sizeof...(IncludedTypes) == 1)
 			{
 				if constexpr (sizeof...(ExcludedTypes) == 0)

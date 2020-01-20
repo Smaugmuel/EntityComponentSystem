@@ -107,10 +107,30 @@ void test1()
 	}
 }
 
+void test2()
+{
+	ECS::ECSManager em;
+	for (size_t i = 0; i < 10; i++)
+	{
+		auto entity = em.createEntity();
+	}
+	for (size_t i = 0; i < 10; i++)
+	{
+		em.attachComponent<Position>(ECS::EntityID(9 - i), i * 2.0f, i * 3.0f);
+	}
+
+	auto view = em.getView<Position>();
+	view.for_each_entity([](Position& pos)
+		{
+			pos.x = pos.x;
+		}
+	);
+}
+
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	test1();
+	test2();
 	return 0;
 }
