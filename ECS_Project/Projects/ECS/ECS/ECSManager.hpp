@@ -50,13 +50,13 @@ namespace ECS
 		}
 
 		template<typename CompType, typename... Args>
-		[[maybe_unused]] CompType* attachComponent(const Entity& entity, Args&... args)
+		[[maybe_unused]] CompType* attachComponent(const Entity& entity, Args&&... args)
 		{
 			static_assert(is_component<CompType>::value, "Not a component");
-			return attachComponent<CompType, Args...>(entity.ID, args...);
+			return attachComponent<CompType, Args...>(entity.ID, std::forward<Args>(args)...);
 		}
 		template<typename CompType, typename... Args>
-		[[maybe_unused]] CompType* attachComponent(EntityID entityID, const Args&... args)
+		[[maybe_unused]] CompType* attachComponent(EntityID entityID, Args&&... args)
 		{
 			static_assert(is_component<CompType>::value, "Not a component");
 
@@ -75,7 +75,7 @@ namespace ECS
 			{
 				if (pool->components.size() == 0)
 				{
-					pool->components.add(0, args...);
+					pool->components.add(0, std::forward<Args>(args)...);
 				}
 
 				if (!hasComponent<CompType>(entityID))
@@ -89,7 +89,7 @@ namespace ECS
 			{
 				if (!hasComponent<CompType>(entityID))
 				{
-					pool->components.add(entityID, args...);
+					pool->components.add(entityID, std::forward<Args>(args)...);
 					addToBitMask<CompType>(entityID);
 				}
 

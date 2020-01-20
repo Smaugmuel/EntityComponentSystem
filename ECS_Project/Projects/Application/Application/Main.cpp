@@ -106,13 +106,10 @@ void test1()
 	}
 }
 
-
 int main()
 {
 	ECS::ECSManager em;
 	auto entity = em.createEntity();
-	em.attachComponent<TestingCopies>(entity.ID, Data{ 3.4f, 25.2f, 64.53f, 1.4f });
-
 
 	std::cin.get();
 	return 0;

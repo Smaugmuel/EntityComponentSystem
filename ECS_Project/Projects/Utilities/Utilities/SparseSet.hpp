@@ -22,7 +22,7 @@ public:
 	SparseSet& operator=(const SparseSet& other) = delete;
 
 	template<typename... Args>
-	bool add(IndexType index, const Args& ... args)
+	bool add(IndexType index, Args&&... args)
 	{
 		// Invalid index
 		if (index < 0)
@@ -38,7 +38,7 @@ public:
 			return true;
 		}
 
-		addAndLinkElement(index, args...);
+		addAndLinkElement(index, std::forward<Args>(args)...);
 
 		return true;
 	}
@@ -113,9 +113,9 @@ private:
 	}
 
 	template<typename ... Args>
-	void addAndLinkElement(IndexType index, const Args&... args)
+	void addAndLinkElement(IndexType index, Args&&... args)
 	{
-		m_elements.emplace_back(args...);
+		m_elements.emplace_back(std::forward<Args>(args)...);
 
 		// Index is assumed to be valid
 		m_indexToElem[index] = static_cast<IndexType>(m_elements.size()) - 1;
