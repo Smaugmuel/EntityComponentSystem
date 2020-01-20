@@ -1,7 +1,8 @@
+#include <iostream>
+#include <crtdbg.h>
 #include "ECS/ECSManager.hpp"
 #include "Components/ApplicationComponents.hpp"
 #include "Utilities/Timer.hpp"
-#include <iostream>
 
 void createCharacter(ECS::ECSManager& em)
 {
@@ -80,7 +81,7 @@ void test1()
 	ECS::ECSManager em;
 	Timer::TimePoint tp1, tp2;
 
-	for (size_t i = 0; i < 10'000; i++)
+	for (size_t i = 0; i < 1'000; i++)
 	{
 		createCharacter(em);
 	}
@@ -108,9 +109,8 @@ void test1()
 
 int main()
 {
-	ECS::ECSManager em;
-	auto entity = em.createEntity();
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	std::cin.get();
+	test1();
 	return 0;
 }
