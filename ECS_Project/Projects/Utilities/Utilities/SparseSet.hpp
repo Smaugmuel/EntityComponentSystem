@@ -63,6 +63,21 @@ public:
 		m_elemToIndex.pop_back();
 		m_indexToElem[index] = -1;
 
+		//// Indices which will be linked after removal of element
+		//const IndexType movedElemIndex = m_indexToElem[index];
+		//const IndexType movedKeyIndex = m_elements[movedElemIndex]
+		//const IndexType movedLinkIndex = m_elemToIndex.back();
+
+		//// Move element and redirect links
+		//m_elements[movedElemIndex] = m_elements.back();
+		//m_elemToIndex[movedElemIndex] = movedLinkIndex;
+		//m_indexToElem[movedLinkIndex] = movedElemIndex;
+
+		//// Remove last element and remove links
+		//m_elements.pop_back();
+		//m_elemToIndex.pop_back();
+		//m_indexToElem[index] = -1;
+
 		return true;
 	}
 	bool has(IndexType index) const

@@ -2,7 +2,10 @@
 
 #include <tuple>
 #include <type_traits>
+#include <iostream>
+#include <algorithm>
 #include "Utilities/HelperTemplates.hpp"
+#include "Utilities/Utility.hpp"
 
 #pragma region Disjunct
 // std::disjunction_v<Traits...> retrieves the value of the first Traits whose value member is true
@@ -56,7 +59,7 @@ struct PosSys : public Sys
 
 #pragma endregion
 
-#pragma region Templates
+#pragma region Template metaprogramming
 template<typename...>
 using try_to_instantiate = void;
 
@@ -121,12 +124,110 @@ constexpr typename std::enable_if_t<static_cast<bool>(std::conjunction<std::is_s
 }
 
 template<typename T, bool condition>
-void checkIfValidWithParameter(char arg1, float arg2, std::enable_if_t<condition, int> check = 0)
+void checkIfValidWithParameter([[maybe_unused]] char arg1, [[maybe_unused]] float arg2, [[maybe_unused]] std::enable_if_t<condition, int> check = 0)
 {
 	// Type of enable_if must be default set (int = 0   or   double = 0.0)
 	// Casts are valid though (char = 3.421   will   become char = '\003')
 }
 
+#pragma endregion
+
+#pragma region Miscellaneous
+void functionPointers()
+{
+	[[maybe_unused]] void(*doStuff)(int a, int b);
+	typedef void (*doStuff2)(int a, int b);
+	using doStuff3 = void (*)(int a, int b);
+	using doStuff4 = std::add_pointer_t<void(int a, int b)>;
+
+	//doStuff(4, 6);	// Produces a warning
+	[[maybe_unused]] doStuff2 fp2 = []([[maybe_unused]]int a, [[maybe_unused]]int b) {};
+	[[maybe_unused]] doStuff3 fp3 = []([[maybe_unused]]int a, [[maybe_unused]]int b) {};
+	[[maybe_unused]] doStuff4 fp4 = []([[maybe_unused]]int a, [[maybe_unused]]int b) {};
+}
+
+
+template<typename T>
+struct IterableList
+{
+	struct iterator
+	{
+		bool operator!=(/* This should not exist in a legit case */[[maybe_unused]] const iterator& rhs)
+		{
+			return true;
+		}
+		iterator& operator++()
+		{
+			return *this;
+		}
+		T& operator*()
+		{
+			return *data;
+		}
+		T* data;
+
+	};
+	iterator begin()
+	{
+		return {};
+	}
+	iterator end()
+	{
+		return {};
+	}
+};
+
+void testIterator()
+{
+	IterableList<int> itt;
+	for (auto it = itt.begin(); it != itt.end(); ++it)
+	{
+		std::cout << "hello";
+	}
+}
+
+
+struct Item
+{
+	Item() noexcept : name(""), val(0)
+	{
+		std::cout << "Default constructor\n";
+	}
+	Item(const std::string& name_, int val_) : name(name_), val(val_)
+	{
+		std::cout << "Specialized constructor\n";
+	}
+	Item(const Item& other) : name(other.name), val(other.val)
+	{
+		std::cout << "Copy constructor\n";
+	}
+	Item(Item&& other) noexcept : name(std::move(other.name)), val(std::move(other.val))
+	{
+		std::cout << "Move constructor\n";
+	}
+	~Item()
+	{
+		std::cout << "Destructor\n";
+	}
+
+	Item& operator=(const Item& lhs)
+	{
+		std::cout << "Copy assignment\n";
+		name = lhs.name;
+		val = lhs.val;
+		return *this;
+	}
+	Item& operator=(Item&& lhs) noexcept
+	{
+		std::cout << "Move assignment\n";
+		name = std::move(lhs.name);
+		val = std::move(lhs.val);
+		return *this;
+	}
+
+	std::string name;
+	int val;
+};
 
 #pragma endregion
 
@@ -156,7 +257,7 @@ void checkThings()
 
 	constexpr int N_ARGS = enable_if_all_same(4, 3, 54);
 
-	int_to_type<4, int, float, double, char, short>::type;
+	using type4 = int_to_type<4, int, float, double, char, short>::type;
 
 	checkIfValidWithParameter<double, true>('2', 2.0f);
 }
@@ -179,4 +280,15 @@ void testSwitch()
 	default:
 		break;
 	}
+}
+
+void testSwap()
+{
+	Item i1("hello", 5312);
+	Item i2("world", 21);
+	Utils::swap(i1, i2);
+
+
+	i1 = Item("thing", 95);
+
 }

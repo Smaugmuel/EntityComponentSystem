@@ -3,6 +3,7 @@
 #include "ECS/ECSManager.hpp"
 #include "Components/ApplicationComponents.hpp"
 #include "Utilities/Timer.hpp"
+#include "Experiments.hpp"
 
 void createCharacter(ECS::ECSManager& em)
 {
@@ -107,7 +108,7 @@ void test1()
 	}
 }
 
-void test2()
+void testViewSorting()
 {
 	ECS::ECSManager em;
 	for (size_t i = 0; i < 10; i++)
@@ -131,6 +132,9 @@ int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	test2();
+	//testIterator();
+
+
+	//testViewSorting();
 	return 0;
 }
