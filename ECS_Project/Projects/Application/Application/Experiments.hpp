@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "Utilities/HelperTemplates.hpp"
 #include "Utilities/Utility.hpp"
+#include "Utilities/Matrix.hpp"
 
 #pragma region Disjunct
 // std::disjunction_v<Traits...> retrieves the value of the first Traits whose value member is true
@@ -231,8 +232,34 @@ struct Item
 
 #pragma endregion
 
+void testMatrixCtors()
+{
+	Mat<4, 3> A;					// Ctor
+	A.m[0][0] = 1;
+	A.m[0][1] = 2;
+	A.m[0][2] = 3;
+	A.m[1][0] = 4;
+	A.m[1][1] = 5;
+	A.m[1][2] = 6;
+	A.m[2][0] = 7;
+	A.m[2][1] = 8;
+	A.m[2][2] = 9;
+	A.m[3][0] = 10;
+	A.m[3][1] = 11;
+	A.m[3][2] = 12;
+
+	auto B = A;				// Cctor
+	auto C = std::move(B);	// Mtor
+	decltype(A) D;			// Ctor
+	C = B;					// Cass
+	D = std::move(A);		// Mass
+}
+
 void checkThings()
 {
+	testMatrixCtors();
+
+
 	is_incrementable<int>::value;
 	is_incrementable<float>::value;
 	is_incrementable<const char*>::value;
