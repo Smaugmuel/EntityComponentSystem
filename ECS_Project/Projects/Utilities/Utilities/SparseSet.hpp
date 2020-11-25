@@ -5,7 +5,7 @@
 	Storage for elements assigned to a certain index.
 	Elements will be stored sequentially and densely.
 	Indices will be stored sparsely.
-	Complexity is O(1) for all actions, excluding the vector operations
+	Removing or getting elements is O(1). Adding is O(1) except when a reallocation is required.
 */
 
 template<typename T>
@@ -105,7 +105,7 @@ public:
 
 	void sort()
 	{
-		// Shell sort the components by entity index in ascending order
+		// Shell sort the elements by index in ascending order
 		const size_t size = m_elements.size();
 		for (size_t gap = size / 2; gap > 0; gap /= 2)
 		{
